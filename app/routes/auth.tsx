@@ -8,13 +8,13 @@ export const meta = () => [
 ];
 
 const Auth = () => {
-  const { isLoading, auth } = usePuterStore();
+  const { isLoading, auth, error, clearError } = usePuterStore();
   const location = useLocation();
   const next = location.search.split("next=")[1];
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (auth.isAuthenticated) navigate(next);
+    if (auth.isAuthenticated) navigate(next || "/");
   }, [auth.isAuthenticated, next]);
 
   return (
@@ -26,6 +26,35 @@ const Auth = () => {
             <h2>Log In to Continue Your Job Journey</h2>
           </div>
           <div>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded mb-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <strong>Sign-in error:</strong>
+                    <div className="text-sm">{error}</div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      className="px-3 py-1 bg-red-100 rounded"
+                      onClick={() => {
+                        clearError();
+                      }}
+                    >
+                      Dismiss
+                    </button>
+                    <button
+                      className="px-3 py-1 bg-blue-600 text-white rounded"
+                      onClick={() => {
+                        clearError();
+                        auth.signIn();
+                      }}
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             {isLoading ? (
               <button className="auth-button animate-pulse">
                 <p>Signing you in...</p>
